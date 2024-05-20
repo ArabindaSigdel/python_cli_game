@@ -1,6 +1,7 @@
 import random
 import time
 from modules.item import HealthPack, Weapon, Item
+from modules.mob import Alien
 
 
 class Player:
@@ -42,7 +43,9 @@ class Player:
                 print("You retreated to your spaceship!")
                 break
             elif action == "u":
-                self.game.item_menu()  # Use the Game instance reference to call crafting_menu
+                self.game.item_menu(
+                    alien
+                )  # Use the Game instance reference to call crafting_menu
             else:
                 print("Invalid action.")
         if self.health <= 0:
@@ -85,10 +88,15 @@ class Player:
             remaining_time = cooldown - (current_time - self.last_heal_time)
             print(f"Cannot heal yet. Please wait {remaining_time:.1f} more seconds.")
 
-    def use_item(self, item_class: Item):
+    def use_item(self, item_class, target):
         item = item_class()
+
         if item.can_use(self.inventory):
-            item.use(self.inventory)
+            if isinstance(target, Alien) and isinstance(item, Weapon):
+                item.use(target, self.inventory)
+            elif isinstance(target, Player):
+                print(self.health)
+                item.use(self, self.inventory)
 
     def drop_item(self):
         for key in self.bag_resources:

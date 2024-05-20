@@ -32,8 +32,9 @@ class HealthPack(Item):
     def can_use(self, inventory):
         return inventory["Health Pack"] >= 1
 
-    def use(self, player):
+    def use(self, player, inventory):
         player.health += 50
+        inventory["Health Pack"] -= 1
         if player.health > 100:
             player.health = 100
         print(f"Used a Health Pack! Health is now {player.health}")
@@ -53,8 +54,9 @@ class Weapon(Item):
     def can_use(self, inventory):
         return inventory["Laser Gun"] >= 1
 
-    def use(self, alien):
-        damage = random.randint(40, 70)
+    def use(self, alien, inventory):
+        inventory["Laser Gun"] -= 1
+        damage = random.randint(50, 70)
         alien.health -= damage
         print(
             f"Laser Gun dealt {damage} damage to the {alien.species}. Its health is now {alien.health}."

@@ -105,14 +105,14 @@ class Game:
             else:
                 print("Invalid choice. Please try again.")
 
-    def item_menu(self):
+    def item_menu(self, target):
         print("\nItem Menu: ")
         print("1.Health Pack")
         print("2. Laser Gun")
         choice = input("Choose an item to use: ")
         if choice == "1":
-            self.player.use_item(HealthPack)
+            self.player.use_item(HealthPack, target)
         elif choice == "2":
-            self.player.use_item(Weapon)
+            self.player.use_item(Weapon, target)
         else:
             print("Invalid choice. Please try again.")

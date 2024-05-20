@@ -1,4 +1,7 @@
 *.pkl
 __pycache__/
-.dist
-.idea
+*.dist/
+*.idea/
+*.venv/
+*.xml
+*iml
