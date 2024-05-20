@@ -2,16 +2,22 @@ from galaxy import Galaxy
 from player import Player
 from mob import Alien
 from crafting import HealthPack, Weapon
+from game_data import GameData
 
 
 class Game:
     def __init__(self):
         self.galaxy = Galaxy()
-        self.player = Player("Explorer", self)  # Pass the Game instance to Player
+        self.player = Player("Explorer", self)
         self.current_planet_index = 0
+        self.data_manager = GameData()
 
     def start(self):
         print("Welcome to Galactic Explorer: Advanced HQ!")
+        loaded_game = self.data_manager.load()
+        if loaded_game:
+            self.__dict__.update(loaded_game.__dict__)
+            print("Loaded saved game.")
         while True:
             self.display_main_menu()
             choice = input("Choose an option: ")
@@ -20,6 +26,7 @@ class Game:
             elif choice == '2':
                 self.hq_menu()
             elif choice == '3':
+                self.data_manager.save(self)
                 print("Thanks for playing!")
                 break
             else:
