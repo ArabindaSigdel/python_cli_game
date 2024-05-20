@@ -105,3 +105,7 @@ class Player:
         for key in self.bag_inventory:
             self.inventory[key] += self.bag_inventory[key]
             self.bag_inventory[key] = 0
+
+    def view_all_items(self):
+        print("Resources:", self.resources)
+        print("Items:", self.inventory)
