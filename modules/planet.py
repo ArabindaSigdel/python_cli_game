@@ -1,5 +1,5 @@
-from resource import Resource
-from mob import Martian, Venusian
+from modules.resource import Resource
+from modules.mob import Martian, Venusian
 
 
 class Planet:

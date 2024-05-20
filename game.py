@@ -1,8 +1,8 @@
-from galaxy import Galaxy
-from player import Player
-from mob import Alien
-from crafting import HealthPack, Weapon
-from game_data import GameData
+from modules.galaxy import Galaxy
+from modules.player import Player
+from modules.mob import Alien
+from modules.crafting import HealthPack, Weapon
+from modules.game_data import GameData
 
 
 class Game:

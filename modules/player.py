@@ -1,5 +1,5 @@
 import random
-from crafting import HealthPack, Weapon
+from modules.crafting import HealthPack, Weapon
 
 
 class Player:

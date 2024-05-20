@@ -1,4 +1,4 @@
-from planet import planets
+from modules.planet import planets
 
 
 class Galaxy:
