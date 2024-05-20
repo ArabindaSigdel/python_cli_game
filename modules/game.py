@@ -79,7 +79,7 @@ class Game:
         print("1. Craft an item")
         print("2. Heal")
         print("3. View resources")
-        print("3. Exit HQ")
+        print("4. Exit HQ")
 
     def crafting_menu(self):
         print("\nCrafting Menu:")

@@ -9,7 +9,7 @@ class Player:
         self.game = game
         self.health = 100
         self.resources = {"Medicinal Plant": 0, "Metal": 0, "Crystal": 0}
-        self.inventory = {"Health Pack": 0, "Laser Gun": 0}
+        self.inventory = {"Health Pack": 5, "Laser Gun": 3}
         self.bag_resources = {"Medicinal Plant": 0, "Metal": 0, "Crystal": 0}
         self.bag_inventory = {"Health Pack": 0, "Laser Gun": 0}
         self.last_heal_time = None
