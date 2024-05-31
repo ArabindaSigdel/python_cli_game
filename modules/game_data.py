@@ -1,4 +1,6 @@
+# game_data.py
 import pickle
+
 
 class GameData:
     def __init__(self, filename='savegame.pkl'):

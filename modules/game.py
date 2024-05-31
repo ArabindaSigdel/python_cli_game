@@ -1,8 +1,10 @@
+# game.py
 from modules.galaxy import Galaxy
 from modules.player import Player
 from modules.mob import Alien
 from modules.item import HealthPack, Weapon
 from modules.game_data import GameData
+import random
 
 
 class Game:
@@ -54,10 +56,31 @@ class Game:
     def explore_planet(self, planet):
         if self.player.health > 0:
             print(f"\nExploring {planet.name}: {planet.description}")
-            self.player.explore(planet)
+            encounter = random.choice(["alien", "resource", "nothing"])
+            if encounter == "alien":
+                alien = planet.content
+                print(f"You encounter an alien: {alien.description}")
+                self.combat(alien)
+            elif encounter == "resource":
+                resource = planet.find_resource()
+                print(f"You find a resource: {resource.type} (Value: {resource.value})")
+                self.player.collect(resource)
+            else:
+                print("You find nothing of interest.")
             self.return_to_hq_option()
         else:
-            print(f"Your HP is too low. You cannot explore now!!")
+            print("Your HP is too low. You cannot explore now!")
+
+    def combat(self, alien):
+        while alien.health > 0 and self.player.health > 0:
+            self.item_menu(alien)
+            alien.attack(self.player)
+            if self.player.health <= 0:
+                print("You have been defeated!")
+                break
+            if alien.health <= 0:
+                print("You defeated the alien!")
+                break
 
     def hq_menu(self):
         print("\n--- Headquarters ---")
@@ -71,6 +94,8 @@ class Game:
             elif choice == "3":
                 self.player.view_all_items()
             elif choice == "4":
+                self.player.view_storage()
+            elif choice == "5":
                 break
             else:
                 print("Invalid choice. Please try again.")
@@ -79,7 +104,8 @@ class Game:
         print("1. Craft an item")
         print("2. Heal")
         print("3. View resources")
-        print("4. Exit HQ")
+        print("4. View storage")
+        print("5. Exit HQ")
 
     def crafting_menu(self):
         print("\nCrafting Menu:")
@@ -95,7 +121,7 @@ class Game:
 
     def return_to_hq_option(self):
         while True:
-            choice = input("Do you want to return to HQ? (y/n): ").lower()
+            choice = choice = input("Do you want to return to HQ? (y/n): ").lower()
             if choice == "y":
                 self.hq_menu()
                 self.player.store_item()
@@ -107,7 +133,7 @@ class Game:
 
     def item_menu(self, target):
         print("\nItem Menu: ")
-        print("1.Health Pack")
+        print("1. Health Pack")
         print("2. Laser Gun")
         choice = input("Choose an item to use: ")
         if choice == "1":

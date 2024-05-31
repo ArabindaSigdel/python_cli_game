@@ -1,119 +1,89 @@
-import random
-import time
-from modules.item import HealthPack, Weapon, Item
-from modules.mob import Alien
-
+# player.py
+from modules.item import HealthPack, Weapon
 
 class Player:
     def __init__(self, name, game):
         self.name = name
-        self.game = game
         self.health = 100
-        self.resources = {"Medicinal Plant": 0, "Metal": 0, "Crystal": 0}
         self.inventory = {"Health Pack": 5, "Laser Gun": 3}
-        self.bag_resources = {"Medicinal Plant": 0, "Metal": 0, "Crystal": 0}
-        self.bag_inventory = {"Health Pack": 0, "Laser Gun": 0}
-        self.last_heal_time = None
-
-    def is_alive(self):
-        return self.health > 0
+        self.storage = []
+        self.resources = {'Medicinal Plant': 0, 'Metal': 0, 'Crystal': 0}
+        self.game = game
 
     def explore(self, planet):
-        is_planet_cleared = self.encounter(planet.content)
-        if is_planet_cleared:
-            self.collect_resource(planet.resource)
+        # Explore the planet (handled in game.py)
+        pass
 
-    def collect_resource(self, resource):
-        self.bag_resources[resource.type] += resource.value
-        print(
-            f"Collected {resource.value} units of {resource.type}! Total {resource.type}: {self.resources[resource.type]}"
-        )
-
-    def encounter(self, alien):
-        print(f"A hostile {alien.species} appears!")
-        while self.health > 0 and alien.health > 0:
-            action = input(
-                "Do you want to (A)ttack, (R)etreat, or (U)se Item? "
-            ).lower()
-            if action == "a":
-                self.attack(alien)
-                if alien.health > 0:
-                    alien.attack(self)
-            elif action == "r":
-                print("You retreated to your spaceship!")
-                break
-            elif action == "u":
-                self.game.item_menu(
-                    alien
-                )  # Use the Game instance reference to call crafting_menu
-            else:
-                print("Invalid action.")
-        if self.health <= 0:
-            print("You have been slain by the alien!")
-            self.drop_item()
-            return False
-        elif alien.health <= 0:
-            print(f"You have defeated the {alien.species}!")
-            return True
-
-    def attack(self, alien):
-        damage = random.randint(10, 20)
-        alien.health -= damage
-        if alien.health > 0:
-            print(
-                f"You dealt {damage} damage to the {alien.species}. Its health is now {alien.health}."
-            )
+    def heal(self):
+        if self.inventory["Health Pack"] > 0:
+            health_pack = HealthPack()
+            health_pack.use(self, self.inventory)
+        else:
+            print("No Health Packs available.")
 
     def craft_item(self, item_class):
         item = item_class()
         if item.can_craft(self.resources):
             item.craft(self.resources)
-            self.bag_inventory[item.name] += 1
-            print(f"Crafted a {item.name}!")
+            self.inventory[item.name] += 1
+            print(f"{item.name} crafted.")
         else:
             print(f"Insufficient resources to craft {item.name}.")
 
-    def heal(self):
-        current_time = time.time()
-        cooldown = 300  # 300 seconds = 5 minutes
-
-        if (
-            self.last_heal_time is None
-            or (current_time - self.last_heal_time) >= cooldown
-        ):
-            self.health = 100
-            self.last_heal_time = current_time
-            print("Healed to full health!")
+    def view_all_items(self):
+        if any(self.inventory.values()):
+            print("Inventory:")
+            for item, quantity in self.inventory.items():
+                if quantity > 0:
+                    print(f"- {item}: {quantity}")
         else:
-            remaining_time = cooldown - (current_time - self.last_heal_time)
-            print(f"Cannot heal yet. Please wait {remaining_time:.1f} more seconds.")
+            print("Inventory is empty.")
 
-    def use_item(self, item_class, target):
+    def use_item(self, item_class, target=None):
         item = item_class()
-
         if item.can_use(self.inventory):
-            if isinstance(target, Alien) and isinstance(item, Weapon):
-                item.use(target, self.inventory)
-            elif isinstance(target, Player):
-                print(self.health)
-                item.use(self, self.inventory)
+            item.use(target, self.inventory)
+        else:
+            print(f"No {item.name} available.")
 
-    def drop_item(self):
-        for key in self.bag_resources:
-            self.bag_resources[key] = 0
-        for key in self.bag_inventory:
-            self.bag_inventory[key] = 0
-        print("You have dropped all your items")
+    def collect(self, resource):
+        if resource.type in self.resources:
+            self.resources[resource.type] += resource.value
+            print(f"Collected {resource.value} {resource.type}(s).")
+        else:
+            print(f"Unknown resource: {resource.type}")
 
     def store_item(self):
-        for key in self.bag_resources:
-            self.resources[key] += self.bag_resources[key]
-            self.bag_resources[key] = 0
+        if not any(self.inventory.values()):
+            print("No items to store.")
+            return
 
-        for key in self.bag_inventory:
-            self.inventory[key] += self.bag_inventory[key]
-            self.bag_inventory[key] = 0
+        while True:
+            print("Items in inventory:")
+            for i, (item, quantity) in enumerate(self.inventory.items()):
+                if quantity > 0:
+                    print(f"{i + 1}. {item}: {quantity}")
 
-    def view_all_items(self):
-        print("Resources:", self.resources)
-        print("Items:", self.inventory)
+            choice = input("Choose an item to store (or 'q' to quit): ").lower()
+            if choice == 'q':
+                break
+
+            try:
+                choice = int(choice) - 1
+                item_name = list(self.inventory.keys())[choice]
+                if self.inventory[item_name] > 0:
+                    self.inventory[item_name] -= 1
+                    self.storage.append(item_name)
+                    print(f"Stored {item_name}.")
+                else:
+                    print("Invalid choice. Please try again.")
+            except (ValueError, IndexError):
+                print("Invalid input. Please enter a number.")
+
+    def view_storage(self):
+        if self.storage:
+            print("Storage:")
+            for item in self.storage:
+                print(f"- {item}")
+        else:
+            print("Storage is empty.")

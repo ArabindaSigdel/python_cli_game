@@ -1,3 +1,4 @@
+# item.py
 import random
 
 
@@ -14,7 +15,7 @@ class Item:
     def can_use(self, inventory):
         raise NotImplementedError
 
-    def use(self, inventory):
+    def use(self, target, inventory):
         raise NotImplementedError
 
 
@@ -58,6 +59,4 @@ class Weapon(Item):
         inventory["Laser Gun"] -= 1
         damage = random.randint(50, 70)
         alien.health -= damage
-        print(
-            f"Laser Gun dealt {damage} damage to the {alien.species}. Its health is now {alien.health}."
-        )
+        print(f"Laser Gun dealt {damage} damage to the {alien.name}. Its health is now {alien.health}.")
